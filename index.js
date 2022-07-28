@@ -1,17 +1,15 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
-// const db = mysql.createConnection(
-//   {
-//     host: "localhost",
-//     // MySQL username,
-//     user: "root",
-//     // MySQL password
-//     password: "root",
-//     database: "employees_db",
-//   },
-//   console.log(`Connected to the database.`)
-// );
+const db = mysql.createConnection(
+  {
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "employees_db",
+  },
+  console.log(`Connected to the database.`)
+);
 
 const roleList = ["Customer Service", "Manager", "Engineer", "Intern", "Dude"];
 
@@ -92,14 +90,15 @@ function init() {
           name: "deptName",
         })
         .then(function (info) {
-          console.log(info);
-          // db.connect();
-          // db.query(
-          //   `INSERT INTO department(name) VALUES(${info.deptName});`,
-          //   function (err, results) {
-          //     if (err) throw err;
-          //   }
-          // );
+          console.log(info.deptName);
+          db.connect();
+          db.query(
+            `INSERT INTO department(name) VALUES("${info.deptName}");`,
+            function (err) {
+              if (err) console.log(err);
+            }
+          );
+          return init();
         });
     } else if (data.choice === "Add Employee") {
       console.log(data.choice);
@@ -111,19 +110,31 @@ function init() {
       console.log("WIP");
       return init();
     } else if (data.choice === "View All Roles") {
-      console.log(roleList);
-      return init();
+      db.connect();
+      db.query("SELECT * FROM role", function (err, result) {
+        if (err) console.log(err);
+        console.log(result);
+        return init();
+      });
     } else if (data.choice === "Add Role") {
       inquirer.prompt(roleAdd).then(function (info) {
         console.log(info);
         return init();
       });
     } else if (data.choice === "View All Departments") {
-      console.log(deptList);
-      return init();
+      db.connect();
+      db.query("SELECT * FROM department", function (err, result) {
+        if (err) console.log(err);
+        console.log(result);
+        return init();
+      });
     } else if (data.choice === "View all employees") {
-      console.log(empList);
-      return init();
+      db.connect();
+      db.query("SELECT * FROM employee", function (err, result) {
+        if (err) console.log(err);
+        console.log(result);
+        return init();
+      });
     }
   });
 }
