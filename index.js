@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-// const Query = require("mysql2/typings/mysql/lib/protocol/sequences/Query");
 
 const db = mysql.createConnection(
   {
@@ -13,6 +12,14 @@ const db = mysql.createConnection(
   },
   console.log(`Connected to the database.`)
 );
+
+const roleList = ["Customer Service", "Manager", "Engineer", "Intern", "Dude"];
+
+const manList = ["Thomas V.", "George M.", "Johnathan D.", "Jacob C."];
+
+const deptList = ["Engineering", "Finance", "Legal", "Sales", "Service"];
+
+const empList = ["emp1", "emp2", "emp3", "emp4", "emp5", "emp6"];
 
 const options = [
   "View all employees",
@@ -29,6 +36,48 @@ const startMenu = [
     type: "list",
     name: "choice",
     choices: options,
+  },
+];
+
+const empAdd = [
+  {
+    message: "What is the employee's first name?",
+    name: "empFirstName",
+  },
+  {
+    message: "What is the employee's last name?",
+    name: "empLastName",
+  },
+  {
+    type: "list",
+    message: "What is the employee's role",
+    choices: roleList,
+    name: "empRole",
+  },
+  {
+    type: "list",
+    message: "Who is the employee's manager",
+    choices: manList,
+    name: "empMan",
+  },
+];
+
+const roleAdd = [
+  {
+    type: "input",
+    message: "What is the name of the role?",
+    name: "roleAddName",
+  },
+  {
+    type: "input",
+    message: "What is the salary of the role?",
+    name: "roleAddSal",
+  },
+  {
+    type: "list",
+    message: "What department does the role belong to",
+    choices: deptList,
+    name: "roleAddDept",
   },
 ];
 
@@ -51,20 +100,23 @@ function init() {
             }
           );
         });
+    } else if (data.options === "Add Employee") {
+      inquirer.prompt(empAdd).then(function (info) {
+        console.log(info);
+      });
+    } else if (data.options === "Update Employee Roles") {
+      console.log("WIP");
+    } else if (data.options === "View All Roles") {
+      console.log(roleList);
+    } else if (data.options === "Add Role") {
+      inquirer.prompt(roleAdd).then(function (info) {
+        console.log(info);
+      });
+    } else if (data.options === "View All Departments") {
+      console.log(deptList);
+    } else if (data.options === "View all employees") {
+      console.log(empList);
     }
-    //  else if(data.options === "Add Employee") {
-
-    // }else if(data.options === ) {
-
-    // }else if(data.options === ) {
-
-    // }else if(data.options === ) {
-
-    // }else if(data.options === ) {
-
-    // }else if(data.options === ) {
-
-    // }
   });
 }
 
