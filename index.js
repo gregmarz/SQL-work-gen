@@ -1,17 +1,17 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // MySQL password
-    password: "root",
-    database: "employees_db",
-  },
-  console.log(`Connected to the database.`)
-);
+// const db = mysql.createConnection(
+//   {
+//     host: "localhost",
+//     // MySQL username,
+//     user: "root",
+//     // MySQL password
+//     password: "root",
+//     database: "employees_db",
+//   },
+//   console.log(`Connected to the database.`)
+// );
 
 const roleList = ["Customer Service", "Manager", "Engineer", "Intern", "Dude"];
 
@@ -83,8 +83,8 @@ const roleAdd = [
 
 function init() {
   inquirer.prompt(startMenu).then(function (data) {
-    console.log(data);
-    if (data.options === "Add Department") {
+    console.log(data.choice);
+    if (data.choice === "Add Department") {
       inquirer
         .prompt({
           type: "input",
@@ -92,30 +92,38 @@ function init() {
           name: "deptName",
         })
         .then(function (info) {
-          db.connect();
-          db.query(
-            `INSERT INTO department(name) VALUES(${info.deptName});`,
-            function (err, results) {
-              if (err) throw err;
-            }
-          );
+          console.log(info);
+          // db.connect();
+          // db.query(
+          //   `INSERT INTO department(name) VALUES(${info.deptName});`,
+          //   function (err, results) {
+          //     if (err) throw err;
+          //   }
+          // );
         });
-    } else if (data.options === "Add Employee") {
+    } else if (data.choice === "Add Employee") {
+      console.log(data.choice);
       inquirer.prompt(empAdd).then(function (info) {
         console.log(info);
+        return init();
       });
-    } else if (data.options === "Update Employee Roles") {
+    } else if (data.choice === "Update Employee Roles") {
       console.log("WIP");
-    } else if (data.options === "View All Roles") {
+      return init();
+    } else if (data.choice === "View All Roles") {
       console.log(roleList);
-    } else if (data.options === "Add Role") {
+      return init();
+    } else if (data.choice === "Add Role") {
       inquirer.prompt(roleAdd).then(function (info) {
         console.log(info);
+        return init();
       });
-    } else if (data.options === "View All Departments") {
+    } else if (data.choice === "View All Departments") {
       console.log(deptList);
-    } else if (data.options === "View all employees") {
+      return init();
+    } else if (data.choice === "View all employees") {
       console.log(empList);
+      return init();
     }
   });
 }
