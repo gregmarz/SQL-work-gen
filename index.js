@@ -84,7 +84,6 @@ const roleAdd = [
 
 function init() {
   inquirer.prompt(startMenu).then(function (data) {
-    console.log(data.choice);
     if (data.choice === "Add Department") {
       inquirer
         .prompt({
@@ -93,7 +92,6 @@ function init() {
           name: "deptName",
         })
         .then(function (info) {
-          console.log(info.deptName);
           db.connect();
           db.query(
             `INSERT INTO department(name) VALUES("${info.deptName}");`,
@@ -104,7 +102,6 @@ function init() {
           return init();
         });
     } else if (data.choice === "Add Employee") {
-      console.log(data.choice);
       manListGen();
       inquirer.prompt(empAdd).then(function (info) {
         db.query(
