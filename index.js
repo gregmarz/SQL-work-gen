@@ -7,17 +7,23 @@ const db = mysql.createConnection(
     user: "root",
     password: "root",
     database: "employees_db",
+    rowsAsArray: true,
   },
   console.log(`Connected to the database.`)
 );
 
-const roleList = ["Customer Service", "Manager", "Engineer", "Intern", "Dude"];
+// const [rows, fields] = db.execute(
+//   "SELECT manager_id,first_name, last_name FROM employee"
+// );
 
-const manList = ["Thomas V.", "George M.", "Johnathan D.", "Jacob C."];
-
-const deptList = ["Engineering", "Finance", "Legal", "Sales", "Service"];
-
-const empList = ["emp1", "emp2", "emp3", "emp4", "emp5", "emp6"];
+function manListGen() {
+  db.query(
+    `select manager_id,first_name, last_name FROM employee;`,
+    function (err, results) {
+      console.table(results);
+    }
+  );
+}
 
 const options = [
   "View all employees",
@@ -47,15 +53,13 @@ const empAdd = [
     name: "empLastName",
   },
   {
-    type: "list",
+    type: "input",
     message: "What is the employee's role",
-    choices: roleList,
     name: "empRole",
   },
   {
-    type: "list",
+    type: "input",
     message: "Who is the employee's manager",
-    choices: manList,
     name: "empMan",
   },
 ];
@@ -72,9 +76,8 @@ const roleAdd = [
     name: "roleAddSal",
   },
   {
-    type: "list",
+    type: "input",
     message: "What department does the role belong to",
-    choices: deptList,
     name: "roleAddDept",
   },
 ];
@@ -102,37 +105,54 @@ function init() {
         });
     } else if (data.choice === "Add Employee") {
       console.log(data.choice);
+      manListGen();
       inquirer.prompt(empAdd).then(function (info) {
-        console.log(info);
+        db.query(
+          `INSERT INTO employee (first_name,last_name,role_id,manager_id) Values("${info.empFirstName}","${info.empLastName}","${info.empRole}","${info.empMan}");`,
+          function (err, result) {
+            if (err) console.log(err);
+          }
+        );
         return init();
       });
     } else if (data.choice === "Update Employee Roles") {
-      console.log("WIP");
-      return init();
+      db.query(
+        "SELECT first_name,role_id FROM employee",
+        function (err, result) {
+          if (err) console.log(err);
+          console.table(result);
+          return init();
+        }
+      );
     } else if (data.choice === "View All Roles") {
       db.connect();
       db.query("SELECT * FROM role", function (err, result) {
         if (err) console.log(err);
-        console.log(result);
+        console.table(result);
         return init();
       });
     } else if (data.choice === "Add Role") {
       inquirer.prompt(roleAdd).then(function (info) {
-        console.log(info);
+        db.query(
+          `INSERT INTO role (title,salary,department_id) Values("${info.roleAddName}","${info.roleAddSal}","${info.roleAddDept}");`,
+          function (err, result) {
+            if (err) console.log(err);
+          }
+        );
         return init();
       });
     } else if (data.choice === "View All Departments") {
       db.connect();
       db.query("SELECT * FROM department", function (err, result) {
         if (err) console.log(err);
-        console.log(result);
+        console.table(result);
         return init();
       });
     } else if (data.choice === "View all employees") {
       db.connect();
       db.query("SELECT * FROM employee", function (err, result) {
         if (err) console.log(err);
-        console.log(result);
+        console.table(result);
         return init();
       });
     }
